@@ -14,20 +14,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: szenius/set-timezone@v1.0 # 设置执行环境的时区
-      with:
-        timezoneLinux: "Asia/Shanghai"
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Run sync script
-      env:
-          UPYUNUSERNAME: ${{ secrets.UPYUNUSERNAME }}
-          UPYUNPASSWORD: ${{ secrets.UPYUNPASSWORD }}
-      run: |
-        git config --local user.email 'github-actions[bot]@users.noreply.github.com'
-        git config --local user.name 'github-actions[bot]'
-        python .github/sync-upyun.py
-        bash git.sh
+      - uses: actions/checkout@v3
+      - uses: szenius/set-timezone@v1.0 # 设置执行环境的时区
+        with:
+          timezoneLinux: "Asia/Shanghai"
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+      - name: Run sync script
+        env:
+            UPYUNUSERNAME: ${{ secrets.UPYUNUSERNAME }}
+            UPYUNPASSWORD: ${{ secrets.UPYUNPASSWORD }}
+        run: |
+          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --local user.name 'github-actions[bot]'
+          python .github/sync-upyun.py
+          bash git.sh
+
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          repository: ${{ github.repository }}
+          retain_days: 30
+          keep_minimum_runs: 6
