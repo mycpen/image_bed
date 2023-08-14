@@ -18,6 +18,17 @@ jobs:
       - uses: szenius/set-timezone@v1.0 # 设置执行环境的时区
         with:
           timezoneLinux: "Asia/Shanghai"
+
+      # 更新 index.html 背景图
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12.x
+      - name: Update Bing Images
+        run: |
+          node ./assets/js/bing.js
+
+      # 同步又拍云图片
       - name: Set up Python 3.10
         uses: actions/setup-python@v3
         with:
