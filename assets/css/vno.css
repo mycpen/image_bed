@@ -10059,4 +10059,11 @@ i {
     background: #0079ff;
 }
 
-
+/* 底部运行时间样式 */
+.footer_runtime {
+    font-size: 1em;
+    margin-bottom: unset;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    font-family: "Courier New", monospace;
+}
