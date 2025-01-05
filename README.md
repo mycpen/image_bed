@@ -2,7 +2,8 @@
 
 ### 本地发包
 
-- 最近发包 2024/04/20，git push 时仅 `.npmignore` 和 `README.md` 发生变更
+- 最近发包 2025-01-05，git push 时仅 `.npmignore` 和 `README.md` 发生变更
+- 已发包 [2022](https://www.npmjs.com/package/mycpen-image-bed/v/0.0.0-2022)、2023、2024
 
 1. 修改 `package.json`，改为去年年份。最后需回滚操作，见步骤 6
 
@@ -10,19 +11,10 @@
    {
      "name": "mycpen-image-bed",
    -  "version": "0.0.0-customSuffix",
-   +  "version": "0.0.0-2023",
+   +  "version": "0.0.0-2024",
    ```
 
-2. 修改 `.npmignore`，新增去年年份
-
-   ```bash
-   # image/
-   image/2022*
-   image/2023*
-   
-   ```
-
-3. 相关命令
+2. 相关命令，发布去年的包
 
    ```bash
    # https://blog.anheyu.com/posts/sdxhu.html#npm-镜像
@@ -45,6 +37,17 @@
    
    # 发布
    npm publish
+   ```
+
+3. 修改 `.npmignore`，新增去年年份
+
+   ```bash
+   # image/
+   image/2022*
+   image/2023*
+   image/2024*
+   # image/2025*
+   
    ```
 
 4. 网址
