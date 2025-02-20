@@ -1,0 +1,70 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Sync upyun cloudStorage
+
+on:
+  schedule:
+    - cron: "0 17 * * 5" # 周六 1:00
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: szenius/set-timezone@v1.0 # 设置执行环境的时区
+        with:
+          timezoneLinux: "Asia/Shanghai"
+
+      # 更新 index.html 背景图
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+      - name: Update Bing Images
+        run: |
+          node ./assets/js/bing.js
+
+      # 同步又拍云图片
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+      - name: Run sync script
+        env:
+            UPYUNUSERNAME: ${{ secrets.UPYUNUSERNAME }}
+            UPYUNPASSWORD: ${{ secrets.UPYUNPASSWORD }}
+        run: |
+          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --local user.name 'github-actions[bot]'
+          python .github/scripts/sync-upyun.py
+          bash git.sh
+
+      # 发包 npm publish | autopublish.yml
+      - name: Change npm package version
+        run: |
+          python .github/scripts/change-package-version.py
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "18.x"
+          registry-url: https://registry.npmjs.org/
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+      - name: Wait for 3 minutes
+        run: sleep 180 # 等待 3 分钟，单位为秒
+      - name: Sync package from npm to npmmirror
+        run: |
+          npm install -g cnpm --registry=https://registry.npmmirror.com
+          cnpm sync mycpen-image-bed
+
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          repository: ${{ github.repository }}
+          retain_days: 30
+          keep_minimum_runs: 6
